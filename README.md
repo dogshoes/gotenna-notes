@@ -6,7 +6,7 @@ The goTenna is a neat little device which permits peer to peer communication ove
 
 **Connecting to your goTenna outside the official app will probably brick your unit.  It might cause it to launch off your desk and off in to space.  Who knows.  Read this document at your own risk.**
 
-Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  Neat-o.
+Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  Neat-o.  I can't determine whether this mode is purely diagnostic or whether it might be possible to fully control the goTenna.
 
 Periodically send a message over the serial port or else you'll get this message and the serial port will drop!
 
@@ -88,7 +88,7 @@ Get information about the battery.
 
 ### Flash Command
 
-Perform a flash check?
+Perform a flash check?  I'm a bit afraid of this command.
 
 ```
 [650554] goTenna> flash
@@ -96,6 +96,15 @@ Perform a flash check?
 [651536-21415] cli_parse_command >> flash
 [651536-000] Flash check passed.
 [651536-000] printer: cli-cmd = flash
+```
+
+### Power Command
+
+Seems to immediately reboot the device.  Does not return any output.  Seems to disregard arguments.
+
+```
+[946820] goTenna> power
+[948519] goTenna>
 ```
 
 ### Random Observed Messages
