@@ -14,7 +14,7 @@ Periodically send a message over the serial port or else you'll get this message
 [1085000-18984] USB Asleep
 ```
 
-Send a CR to get a `goTenna>` prompt.
+Send a CR to get a `goTenna>` prompt.  You don't need to be at a `goTenna>` prompt to enter a command.
 
 ### The Periodic Event
 
@@ -35,7 +35,8 @@ Show the goTenna firmware version.
 
 ```
 [095843] goTenna> version
-[121435] goTenna> [121445-39429] cli_parse_command >> version
+[121435] goTenna> 
+[121445-39429] cli_parse_command >> version
 [121445-000] FW Version : 00.12.02
 [121445-000] Build Date : Oct 22 2015 13:05:48
 
@@ -69,7 +70,8 @@ Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to 
 
 ```
 [364773] goTenna> pap 2
-[366776] goTenna> [366786-2745] cli_parse_command >> pap 2
+[366776] goTenna> 
+[366786-2745] cli_parse_command >> pap 2
 [366786-000] PA Power value changed to 2
 [366786-000] printer: cli-cmd = pap 2
 ```
@@ -105,6 +107,18 @@ Seems to immediately reboot the device.  Does not return any output.  Seems to d
 ```
 [946820] goTenna> power
 [948519] goTenna>
+```
+
+### Log Command
+
+Not at all sure what this does.
+
+```
+[804819] goTenna> log
+[806217] goTenna> 
+[806227-2421] cli_parse_command >> log
+[806227-000] printer: cli-cmd = log
+[806237-010] log received.
 ```
 
 ### Random Observed Messages
@@ -224,7 +238,7 @@ Device Status:     0x0000
   (Bus Powered)
 ```
 
-### Output From `dmsg`
+### Output From `dmesg`
 
 ```
 [125726.694882] usb 2-2.1: new full-speed USB device number 6 using uhci_hcd
