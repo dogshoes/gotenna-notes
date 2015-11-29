@@ -127,3 +127,110 @@ Write Diag Block, 433 CRC: 56364
 Write Diag Block, 434 CRC: 56364
 [330141-2125] Storing Diag Info in Flash
 ```
+
+## USB
+
+### Output From `lsusb`
+
+```
+Bus 002 Device 004: ID 1fc9:2047 NXP Semiconductors 
+Device Descriptor:
+  bLength                18
+  bDescriptorType         1
+  bcdUSB               1.10
+  bDeviceClass            2 Communications
+  bDeviceSubClass         0 
+  bDeviceProtocol         0 
+  bMaxPacketSize0        64
+  idVendor           0x1fc9 NXP Semiconductors
+  idProduct          0x2047 
+  bcdDevice            3.10
+  iManufacturer           1 goTenna, Inc
+  iProduct                2 goTenna
+  iSerial                 3 123456789ABCDEF
+  bNumConfigurations      1
+  Configuration Descriptor:
+    bLength                 9
+    bDescriptorType         2
+    wTotalLength           67
+    bNumInterfaces          2
+    bConfigurationValue     1
+    iConfiguration          4 123456789ABCDEF
+    bmAttributes         0xc0
+      Self Powered
+    MaxPower               64mA
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        0
+      bAlternateSetting       0
+      bNumEndpoints           1
+      bInterfaceClass         2 Communications
+      bInterfaceSubClass      2 Abstract (modem)
+      bInterfaceProtocol      1 AT-commands (v.25ter)
+      iInterface              0 
+      CDC Header:
+        bcdCDC               1.10
+      CDC Union:
+        bMasterInterface        0
+        bSlaveInterface         1 
+      CDC ACM:
+        bmCapabilities       0x00
+      CDC Call Management:
+        bmCapabilities       0x01
+          call management
+        bDataInterface          1
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x82  EP 2 IN
+        bmAttributes            3
+          Transfer Type            Interrupt
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0008  1x 8 bytes
+        bInterval             128
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        1
+      bAlternateSetting       0
+      bNumEndpoints           2
+      bInterfaceClass        10 CDC Data
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      0 
+      iInterface              0 
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x81  EP 1 IN
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+      Endpoint Descriptor:
+        bLength                 7
+        bDescriptorType         5
+        bEndpointAddress     0x01  EP 1 OUT
+        bmAttributes            2
+          Transfer Type            Bulk
+          Synch Type               None
+          Usage Type               Data
+        wMaxPacketSize     0x0040  1x 64 bytes
+        bInterval               0
+Device Status:     0x0000
+  (Bus Powered)
+```
+
+### Output From `dmsg`
+
+```
+[125726.694882] usb 2-2.1: new full-speed USB device number 6 using uhci_hcd
+[125726.826823] usb 2-2.1: New USB device found, idVendor=1fc9, idProduct=2047
+[125726.826826] usb 2-2.1: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[125726.826828] usb 2-2.1: Product: goTenna
+[125726.826830] usb 2-2.1: Manufacturer: goTenna, Inc
+[125726.826831] usb 2-2.1: SerialNumber: 123456789ABCDEF
+```
