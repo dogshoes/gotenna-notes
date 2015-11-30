@@ -6,7 +6,7 @@ The goTenna is a neat little device which permits peer to peer communication ove
 
 **Connecting to your goTenna outside the official app will probably brick your unit.  It might cause it to launch off your desk and off in to space.  Who knows.  Read this document at your own risk.**
 
-Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  Neat-o.  I can't determine whether this mode is purely diagnostic or whether it might be possible to fully control the goTenna.
+Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  The driver seems to load in Windows 10, but not Windows 7.  Linux is happy to load a generic ACM driver (like TTY but for modems.)  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  Neat-o.  I can't determine whether this mode is purely diagnostic or whether it might be possible to fully control the goTenna.
 
 Periodically send a message over the serial port or else you'll get this message and the serial port will drop!
 
@@ -29,6 +29,10 @@ Every minute (?) goTenna outputs diagnostic information about the current state.
 
 Battery voltage is what it says on the tin.  PAP appears to be "PA Power", refer to the `pap` command documented below.  [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) is a pretty familiar RF concept.
 
+### CLI Behavior
+
+The CLI seems to accept some valid commands with any extraneous trailing characters.  For example, the `version` command can be invoked by `versionxy`, or `version;`, or `version;temp;`.
+
 ### Version Command
 
 Show the goTenna firmware version.
@@ -42,7 +46,6 @@ Show the goTenna firmware version.
 
 [121445-000] Boot Version: 01.07
 [121445-000] printer: cli-cmd = version
-
 ```
 
 ### RSSI Command
@@ -121,9 +124,59 @@ Not at all sure what this does.
 [806237-010] log received.
 ```
 
-### Random Observed Messages
+### Temp Command
+
+Show the temperature of some internal component (NXP processor?).
+
+```
+[014864] goTenna> temp
+[022266] goTenna>
+[022276-21064] cli_parse_command >> temp
+[022296-020] Temp raw: e
+[022296-000] Temp: 14
+[022296-000] printer: cli-cmd = temp
+```
+
+```
+[193855] goTenna> temp
+[194621] goTenna>
+[194631-30615] cli_parse_command >> temp
+[194651-020] Temp raw: 11
+[194651-000] Temp: 17
+[194651-000] printer: cli-cmd = temp
+```
+
+### Res Command
+
+Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf) is a High-Performance, Low-Current Tranceiver by Silicon Labs.
+
+```
+[072043] goTenna> res
+[072690] goTenna>
+[072701-1150] cli_parse_command >> res
+[072701-000] printer: cli-cmd = res
+[072711-010] TRX Current State: STATE_POWER_UP *
+[073277-566] Si4460 initialized.
+[073284-007] Batt Voltage : 4163, selected pap: 6
+[073284-000] Batt Voltage : 4165, selected pap: 6
+[073300-016] scan rssi[0=88  1=78  2=87  3=93  4=71]
+[073300-000] MAC bg_rssi=42
+[073300-000] MAC : STATE_POWER_UP*
+[073300-000] Reset Cause : 0, 4
+[073301-001] MAC Current State: Idle*
+[073301-000] Batt Voltage : 4164, selected pap: 6
+[073316-015] scan rssi[0=87  1=89  2=86  3=80  4=87]
+[073317-001] MAC bg_rssi=44
+[073317-000] TRX Current State: STATE_POWER_UP *
+[073883-566] Si4460 initialized.
+[073890-007] Batt Voltage : 4165, selected pap: 6
+```
+
+### Additional Notes and Things to Look at
 
 This is a pile of things to look at later.
+
+This appears at boot.
 
 ```
 [000022-022] PA ------------ off
@@ -132,7 +185,7 @@ This is a pile of things to look at later.
 [000095-00
 ```
 
-How can we read this diag block?  Is there wear leveling in place or does this block just get constantly overwritten?
+How can we read this diag block?  Is there wear leveling in place or does this block just get constantly overwritten?  Diag block is always 433 and 434 on my goTenna.
 
 ```
 
@@ -140,6 +193,37 @@ Write Diag Block, 433 CRC: 56364
 
 Write Diag Block, 434 CRC: 56364
 [330141-2125] Storing Diag Info in Flash
+```
+
+Issuing a command of `?` displays some interesting bits.  It appears as though this is *part* of another command, or chain of commands?  This command *does not* disregard extraneous trailing characters.
+
+Perhaps this simply displays network stats.
+
+```
+[511539] goTenna> ?
+[512308] goTenna>
+[512319-20303] cli_parse_command >> ?
+[512319-000] res->       Reset network SM IDLE.
+[512319-000] ctx {0/1}->         Continuous transmit(en=1).
+[512319-000] cfp {0/1}->         Corrupt First Packet(en=1).
+[512319-000] cap {0/1}->         Corrupt All Packets(en=1).
+[512320-001] printer: cli-cmd = ?
+```
+
+This appeared once after issuing `?`, but I haven't been able to make it appear again.  Perhaps unrelated and caused by noise on the radio?  Nobody near by has a goTenna.
+
+```
+[523195] INT PREAMBLE_DETECT
+[523195-10875] Preamble detect1
+[523196-001] TRX Current State: RX_SYNC_WORD_WAIT *
+[523196-000] MAC Current State: MAC_RX_PRE_RTS*
+[523376-180] TRX State Expired: RX_SYNC_WORD_WAIT *
+[523377-001] TRX channel id : 4
+[523378-001] TRX Current State: PDU_IDLE_LONG *
+[523378-000] turning off the HW
+[523378-000] PA ------------ off
+[523399-021] MAC Receive PreRTS Timeout expired
+[523399-000] MAC Current State: Idle*
 ```
 
 ## USB
@@ -248,3 +332,8 @@ Device Status:     0x0000
 [125726.826830] usb 2-2.1: Manufacturer: goTenna, Inc
 [125726.826831] usb 2-2.1: SerialNumber: 123456789ABCDEF
 ```
+
+## Possible Leads
+
+* [http://tieba.baidu.com/p/3858941725]
+* [https://github.com/akimtke/akim-gotenna/blob/04223025e1a93c9e518d54000696509abdedcc85/src/tests/wireless.py]
