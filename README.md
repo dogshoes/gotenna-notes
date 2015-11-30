@@ -226,6 +226,38 @@ This appeared once after issuing `?`, but I haven't been able to make it appear 
 [523399-000] MAC Current State: Idle*
 ```
 
+Happened again?
+
+```
+[539606] INT PREAMBLE_DETECT
+[539607-6591] Preamble detect1
+[539608-001] TRX Current State: RX_SYNC_WORD_WAIT *
+[539608-000] MAC Current State: MAC_RX_PRE_RTS*
+[539611] INT Sync Word
+[539611-003] TRX Sync Word detected. *
+[539612-001] MODEM STATUS : 00 01 56 58 00 00 00
+[539612-000] MAC RX_Pre-RTS stage=0, sync detect received
+[539613-001] TRX Current State: RX_PDU_PKT_HEADER_WAIT *
+[539671] INT RX_FIFO_ALMOST_FULL
+[539672-059] RX fifo len 18/n
+[539672-000] crc is being checked
+[539673-001] crc is corrupted
+[539681-008] crc packet not recovered
+[539682-001] TRX channel id : 4
+[539684-002] TRX Current State: PDU_IDLE_LONG *
+[539684-000] turning off the HW
+[539684-000] PA ------------ off
+[539694-010] MAC Receive PreRTS Timeout expired
+[539694-000] MAC Current State: Idle*
+[539695-001] Batt Voltage : 4154, selected pap: 6
+[539710-015] scan rssi[0=89  1=84  2=90  3=90  4=86]
+[539710-000] MAC bg_rssi=55
+[539711-001] TRX channel id : 4
+[539712-001] TRX Current State: PDU_IDLE_LONG *
+[539713-001] turning off the HW
+[539713-000] PA ------------ off
+```
+
 ## USB
 
 ### Output From `lsusb`
