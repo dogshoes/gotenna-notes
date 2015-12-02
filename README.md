@@ -6,7 +6,7 @@ The goTenna is a neat little device which permits peer to peer communication ove
 
 **Connecting to your goTenna outside the official app will probably brick your unit.  It might cause it to launch off your desk and off in to space.  Who knows.  Read this document at your own risk.**
 
-Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  The driver seems to load in Windows 10, but not Windows 7.  Linux is happy to load a generic ACM driver (like TTY but for modems.)  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  Neat-o.  I can't determine whether this mode is purely diagnostic or whether it might be possible to fully control the goTenna.
+Connect the goTenna over USB to any desktop computer and it shows up as a "goTenna" (swell!), and exposes a serial port over USB.  The driver seems to load in Windows 10, but not Windows 7.  Linux is happy to load a generic ACM driver (like TTY but for modems.)  Connecting to this serial port at 9600 baud gives us an undocumented CLI.  I can't yet determine whether this mode is purely diagnostic or whether it might be possible to fully control the goTenna.
 
 Periodically send a message over the serial port or else you'll get this message and the serial port will drop!
 
@@ -31,7 +31,7 @@ Battery voltage is what it says on the tin.  PAP appears to be "PA Power", refer
 
 ### CLI Behavior
 
-The CLI seems to accept some valid commands with any extraneous trailing characters.  For example, the `version` command can be invoked by `versionxy`, or `version;`, or `version;temp;`.
+The CLI seems to accept some valid commands with any extraneous trailing characters.  For example, the `version` command can be invoked by `versionxy`, or `version;`, or `version;temp;`.  Some commands will default given no arguments (`pap` for example), but some commands will report as unrecongnized unless an argument is passed (`chn` and `ctx` to name a few).  The behavior seems a little picky.
 
 ### Version Command
 
@@ -50,7 +50,7 @@ Show the goTenna firmware version.
 
 ### RSSI Command
 
-Get information about the RSSI.
+Get the [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) of the five [MURS](https://en.wikipedia.org/wiki/Multi-Use_Radio_Service) channels used to communicate over.
 
 ```
 [165182] goTenna> rssi
@@ -69,7 +69,7 @@ Channel 4 RSSI 82
 
 ### PAP Command
 
-Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to change it.  However, changing it doesn't seem to change the "selected pap" value that appears in the periodic event. 
+Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to change it.  However, changing it doesn't seem to change the "selected pap" value that appears in the periodic event.   The largest PAP that can be entered is 255.  Larger values will be truncated to 255.
 
 ```
 [364773] goTenna> pap 2
@@ -81,7 +81,7 @@ Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to 
 
 ### Batt Command
 
-Get information about the battery.
+Get information about the battery.  Issuing the command as `battery` works just as well, but this could be due to the cli ignoring extraneous trailing characters.  The values this command gives are sometimes wonky, so several readings should be taken any outliers should be discarded.
 
 ```
 [541125] goTenna> batt
@@ -105,7 +105,7 @@ Perform a flash check?  I'm a bit afraid of this command.
 
 ### Power Command
 
-Seems to immediately reboot the device.  Does not return any output.  Seems to disregard arguments.
+Seems to immediately reboot the device.  Does not return any output.  Your serial connection will drop as the USB device disconnects and reconnects.
 
 ```
 [946820] goTenna> power
@@ -126,7 +126,7 @@ Not at all sure what this does.
 
 ### Temp Command
 
-Show the temperature of some internal component (NXP processor?).
+Read the internal temperature.  Could be the temperature of the Freescale ARM processor or the Silicon Labs RF chip, not entirely sure yet.  Given the preoccupation with the TRX (tranceiver?) temperature during `send` I would imagine this is temperature of the Silicon Labs RF chip.
 
 ```
 [014864] goTenna> temp
@@ -150,6 +150,8 @@ Show the temperature of some internal component (NXP processor?).
 
 Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf) is a High-Performance, Low-Current Tranceiver by Silicon Labs.
 
+Interesting to note this command is sesensitive to trailing extraneous characters.
+
 ```
 [072043] goTenna> res
 [072690] goTenna>
@@ -172,32 +174,9 @@ Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/Tech
 [073890-007] Batt Voltage : 4165, selected pap: 6
 ```
 
-### Additional Notes and Things to Look at
+### ? (Help) Command
 
-This is a pile of things to look at later.
-
-This appears at boot.
-
-```
-[000022-022] PA ------------ off
-[000032-010] TRX Current State: STATE_POWER_UP *
-[000093-061] Msg Add: 19XXX0, Wrt Msg Add: 19XXX8, Del Msg Num: 0, Total Msg Nu1
-[000095-00
-```
-
-How can we read this diag block?  Is there wear leveling in place or does this block just get constantly overwritten?  Diag block is always 433 and 434 on my goTenna.
-
-```
-
-Write Diag Block, 433 CRC: 56364
-
-Write Diag Block, 434 CRC: 56364
-[330141-2125] Storing Diag Info in Flash
-```
-
-Issuing a command of `?` displays some interesting bits.  It appears as though this is *part* of another command, or chain of commands?  This command *does not* disregard extraneous trailing characters.
-
-Perhaps this simply displays network stats.
+Issuing a `?` to the CLI returns some help.
 
 ```
 [511539] goTenna> ?
@@ -210,7 +189,224 @@ Perhaps this simply displays network stats.
 [512320-001] printer: cli-cmd = ?
 ```
 
-This appeared once after issuing `?`, but I haven't been able to make it appear again.  Perhaps unrelated and caused by noise on the radio?  Nobody near by has a goTenna.
+### Ctx Command
+
+Enable continuous transmission mode.
+
+```
+[1477193] goTenna> ctx 1
+[1480391] goTenna>
+[1480402-4386] cli_parse_command >> ctx 1
+[1480402-000] printer: cli-cmd = ctx 1
+[1480413-011] Continuous Transmission Enabled.
+[1480421-008] PA ------------on
+[1480421-000] vapc value  3400
+```
+
+Disable continuous transmission mode.
+
+```
+[024889] goTenna> ctx 0
+[027132] goTenna>
+[027143-4549] cli_parse_command >> ctx 0
+[027143-000] printer: cli-cmd = ctx 0
+[027154-011] PA ------------ off
+[027720-566] Si4460 initialized.
+[027727-007] Continuous Transmission Disabled.
+```
+
+### Cfp Command
+
+Enable first packet corruption.  Used for testing?
+
+```
+[056441] goTenna> cfp 1
+[058044] goTenna>
+[058054-27934] cli_parse_command >> cfp 1
+[058054-000] printer: cli-cmd = cfp 1
+[058065-011] First Packet Corruption Enabled.
+```
+
+Disable first packet corruption.
+
+```
+[059257] goTenna> cfp 0
+[060669] goTenna>
+[060679-2614] cli_parse_command >> cfp 0
+[060679-000] printer: cli-cmd = cfp 0
+[060690-011] First Packet Corruption Disabled.
+```
+
+### Cap Command
+
+Enable all packet corruption.
+
+```
+[133133] goTenna> cap 1
+[134233] goTenna>
+[134243-73553] cli_parse_command >> cap 1
+[134243-000] printer: cli-cmd = cap 1
+[134254-011] All Packet Corruption Enabled.
+```
+
+Disable all packet corruption.
+
+```
+[134750] goTenna> cap 0
+[135746] goTenna> 
+[135756-1502] cli_parse_command >> cap 0
+[135756-000] printer: cli-cmd = cap 0
+[135767-011] All Packet Corruption Disabled.
+```
+
+### Chn Command
+
+Select a channel.  The maximum channel that can be selected is 2147483647 (32 bits).  However, during `send` it appears as though the channel is handled as only 8 bits and wraps around, implying maximum of 256 channels.
+
+```
+[188229] goTenna> chn 1
+[189336] goTenna>
+[189347-1726] cli_parse_command >> chn 1
+[189347-000] printer: cli-cmd = chn 1
+[189358-011] Channel 1 selected.
+```
+
+### Send Command 
+
+Send... something?  Uses previously set values from `vapc`, `chn`, `pap` commands.  Unsure how to set the payload, destination, or anything else about what's being sent.
+
+```
+[342917] goTenna> send
+[343867] goTenna>
+[343877-13038] cli_parse_command >> send
+[343877-000] printer: cli-cmd = send
+[343888-011] Sending PN9 packets
+[344454-566] Si4460 initialized.
+[344462-008] Before Temp
+[344472-010] TRX *** Temp AD Value= 0x5ea0 ***
+[344472-000] TRX Temp 17
+[344473-001] TRX valid temp
+[344473-000] Sending PN9 on chan 0, at vapc adc 3400 and pap 1
+[344473-000] PA ------------on
+[344474-001] vapc value  3400[344731] INT PACKET_SENT
+[344775-301] PA ------------ off
+[344775-000] After Temp
+[344785-010] TRX *** Temp AD Value= 0x5dbd ***
+[344785-000] TRX Temp 29
+[344785-000] TRX valid temp
+[344786-001] TRX Current State: STATE_POWER_UP *
+[345301] INT Sync Word
+[345352-566] Si4460 initialized.
+[345359-007] Batt Voltage : 4131, selected pap: 6
+[345359-000] Batt Voltage : 4131, selected pap: 6
+[345375-016] scan rssi[0=98  1=82  2=91  3=96  4=87]
+[345375-000] MAC bg_rssi=42
+[345375-000] MAC : STATE_POWER_UP*
+[345375-000] Reset Cause : 82, 0
+[345376-001] MAC Current State: Idle*
+[345376-000] Batt Voltage : 4134, selected pap: 6
+[345391-015] scan rssi[0=93  1=81  2=91  3=94  4=77]
+[345392-001] MAC bg_rssi=45
+[345392-000] TRX Current State: STATE_POWER_UP *
+[345958-566] Si4460 initialized.
+[345965-007] Batt Voltage : 4132, selected pap: 6
+```
+
+### Vapc Command
+
+Set the VAPC?  Don't set this.  Leave it at 3400?
+
+```
+[484758] goTenna> vapc 3400
+[486969] goTenna>
+[486980-35964] cli_parse_command >> vapc 3400
+[486980-000] vapc value changed
+[486980-000] printer: cli-cmd = vapc 3400
+```
+
+### The Button
+
+There's a tiny button near the USB port on the goTenna.  A single press results in the following message.
+
+```
+[038760] BUTTON RELEASED
+[039378] BUTTON PRESSED
+```
+
+Holding the button down for over 10 seconds does this!  Does this reset the data stored in flash?
+
+```
+[051174-10159] Block: 433, Invalid CRC, Expected:29739, IS:-1
+[051181-007] Block: 434, Invalid CRC, Expected:29739, IS:-1
+[051181-000] Diag Block corruption. Erasing Diag Block.
+Write Diag Block, 433 CRC: 0
+
+Write Diag Block, 434 CRC: 0
+[051309-128] Block: 433, Invalid CRC, Expected:10804, IS:0
+[052028] BUTTON RELEASED
+[056970-5661] Binary Log deleted, 1
+[056970-000] Current Write Index, 0222
+[056971-001] Current Write Offset, 0032
+[056971-000] Current Read Index, 0222
+[056971-000] Current Read Offset, 0032
+[056971-000] Device Data Reset successful
+```
+
+Additionally, for extra excitement, there's a red LED which illuminates the button under certain circumstances.  Related to charging status?
+
+### Additional Notes and Things to Look at
+
+This is a pile of things to look at later.
+
+This appears at boot.
+
+```
+[000022-022] PA ------------ off
+[000032-010] TRX Current State: STATE_POWER_UP *
+[000093-061] Msg Add: 19XXX0, Wrt Msg Add: 19XXX8, Del Msg Num: 0, Total Msg Num: 251. Max Msg: 261
+[000095-00
+```
+
+This also appears at boot, sometimes?
+
+```
+[000022-022] PA ------------ off
+[000032-010] TRX Current State: STATE_POWER_UP *
+[000093-061] Msg Add: 19a000, Wrt Msg Add: 19a000, Del Msg Num: 0, Total Msg Nu1
+[000095-002] PAP Offset 0
+[000095-000] SERIAL no: MX1542XXXX[000096-001]
+[000096-000]
+Bluetooth flag 255
+[000107-011] Flash Initialized.
+[000598-491] Si4460 initialized.
+[000605-007] Batt Voltage : 4157, selected pap: 6
+[000605-000] Batt Voltage : 4152, selected pap: 6
+[000621-016] scan rssi[0=44  1=44  2=35  3=44  4=44]
+[000621-000] MAC bg_rssi=39
+[000621-000] MAC : STATE_POWER_UP*
+[000621-000] Reset Cause : 82, 0
+[000622-001] MAC Current State: Idle*
+[000622-000] Batt Voltage : 4153, selected pap: 6
+[000637-015] scan rssi[0=47  1=40  2=35  3=47  4=40]
+[000637-000] MAC bg_rssi=39
+[000638-001] TRX Current State: STATE_POWER_UP *
+[000639-001] Flash Message invalid Metadata
+[001204-565] Si4460 initialized.
+[001211-007] Batt Voltage : 4155, selected pap: 6
+[001212-001] TRX channel id waiting idle: 4
+```
+
+How can we read this diag block?  Is there wear leveling in place or does this block just get constantly overwritten?  Diag block is always 433 and 434 on my goTenna.
+
+```
+
+Write Diag Block, 433 CRC: 56364
+
+Write Diag Block, 434 CRC: 56364
+[330141-2125] Storing Diag Info in Flash
+```
+
+Had this appear.
 
 ```
 [523195] INT PREAMBLE_DETECT
@@ -367,5 +563,5 @@ Device Status:     0x0000
 
 ## Possible Leads
 
-* [http://tieba.baidu.com/p/3858941725]
-* [https://github.com/akimtke/akim-gotenna/blob/04223025e1a93c9e518d54000696509abdedcc85/src/tests/wireless.py]
+* http://tieba.baidu.com/p/3858941725
+* https://github.com/akimtke/akim-gotenna/blob/04223025e1a93c9e518d54000696509abdedcc85/src/tests/wireless.py
