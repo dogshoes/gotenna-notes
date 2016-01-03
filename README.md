@@ -35,7 +35,7 @@ The CLI seems to accept some valid commands with any extraneous trailing charact
 
 ### Version Command
 
-Show the goTenna firmware version.
+Show the goTenna firmware version.  This version appears out-of-sync from what's displayed in the goTenna app.  This reports 00.12.02 while the goTenna app reports 00.18.02, this repors 00.15.04 while the goTenna app reports 00.21.04.
 
 ```
 [095843] goTenna> version
@@ -150,7 +150,7 @@ Read the internal temperature.  Could be the temperature of the Freescale ARM pr
 
 Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf) is a High-Performance, Low-Current Tranceiver by Silicon Labs.
 
-Interesting to note this command is sesensitive to trailing extraneous characters.
+Interesting to note, this command is sesensitive to trailing extraneous characters.
 
 ```
 [072043] goTenna> res
@@ -324,6 +324,20 @@ Set the VAPC?  Don't set this.  Leave it at 3400?
 [486980-000] printer: cli-cmd = vapc 3400
 ```
 
+### Read_eflash command
+
+Output the contents of the internal flash chip over the serial port.  I've created some tools to aid with extracting the flash this way: [https://github.com/dogshoes/gotenna-flash-dumper].
+
+```
+[1359491] goTenna> read_eflash
+[1361976] goTenna> 
+000000: 3A1008000000600020C10800004D2A01 
+000010: 00512A0100AB0A3A10081000552A0100 
+000020: 592A01005D2A0100612A0100C00A3A10 
+000030: 082000652A0100692A01006D2A010071 
+...
+```
+
 ### The Button
 
 There's a tiny button near the USB port on the goTenna.  A single press results in the following message.
@@ -453,6 +467,70 @@ Happened again?
 [539713-001] turning off the HW
 [539713-000] PA ------------ off
 ```
+
+This occurs when pairing the goTenna.
+
+```
+BLE set to connected
+[026584-8392] Bluetooth Response Sent.
+[026703-119] NRF Message sent
+[026734-031] system info asked.
+[026744-010] TRX *** Temp AD Value= 0x5efd ***
+[026744-000] TRX Temp 12
+[026745-001] TRX valid temp
+[026789-044] Bluetooth Response Sent.
+[026943-154] NRF Message sent
+[027014-071] Bluetooth Response Sent.
+[027094-080] NRF Message sent
+[027123-029] Bluetooth Response Sent.
+[027274-151] NRF Message sent
+[027303-029] Received get stored message.
+[027304-001] Get message NACK sent.
+[027304-000] Bluetooth Response Sent.
+[027424-120] NRF Message sent
+[027574-150]  Received date and time
+[027575-001] Bluetooth Response Sent.
+[027693-118] NRF Message sent
+```
+
+On setting the GID.
+
+```
+[156336-33320] stored hash17920
+[156338-002] Bluetooth Response Sent.
+[156455-117] NRF Message sent
+```
+
+This happened after.
+
+```
+[175686-11670]  Received date and time
+[175687-001] Bluetooth Response Sent.
+[175805-118] NRF Message sent
+```
+
+Beginning firmware upgrade.
+
+```
+[083825-151]  Received date and time
+[083825-000] Bluetooth Response Sent.
+[083944-119] NRF Message sent
+[083974-030] FW Exchange initiated.
+[088346-4372] Bluetooth Response Sent.
+[088384-038] NRF Message sent
+[089225-841] FW data packet received
+[089226-001] seqid 36[089226-000] Bluetooth Response Sent.
+[089344-118] NRF Message sent
+[090155-811] FW data packet received
+[090156-001] seqid 37[090156-000] stored pkt 1 of 655 stored length 250 of total length 163652
+[090167-011] Bluetooth Response Sent.
+[090274-107] NRF Message sent
+[091085-811] FW data packet received
+[091086-001] seqid 38[091086-000] stored pkt 2 of 655 stored length 500 of total length 163652
+[091098-012] Bluetooth Response Sent.
+[091205-107] NRF Message sent
+```
+
 
 ## USB
 
