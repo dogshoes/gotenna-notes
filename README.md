@@ -31,11 +31,19 @@ Battery voltage is what it says on the tin.  PAP appears to be "PA Power", refer
 
 ### CLI Behavior
 
-The CLI seems to accept some valid commands with any extraneous trailing characters.  For example, the `version` command can be invoked by `versionxy`, or `version;`, or `version;temp;`.  Some commands will default given no arguments (`pap` for example), but some commands will report as unrecongnized unless an argument is passed (`chn` and `ctx` to name a few).  The behavior seems a little picky.
+The CLI seems to accept some valid commands with any extraneous trailing characters.  For example, the `version` command can be invoked by `versionxy`, or `version;`, or `version;temp;`.  Some commands will default given no arguments (`pap` for example), but some commands will report as unrecongnized unless an argument is passed (`chn` and `ctx` to name a few).
+
+As of the latest firmware release, 0.23.2, the `goTenna>` prompt is no longer displayed.
 
 ### Version Command
 
-Show the goTenna firmware version.  This version appears out-of-sync from what's displayed in the goTenna app.  This reports 00.12.02 while the goTenna app reports 00.18.02, this repors 00.15.04 while the goTenna app reports 00.21.04.
+Show the goTenna firmware version.  This version appears different from what the goTenna app reports.
+
+| Version displayed in CLI | Version displayed in app |
+|--------------------------|--------------------------|
+| 00.12.02                 | 00.18.02                 |
+| 00.15.04                 | 00.21.04                 |
+| 00.17.02                 | 0.23.2                   |
 
 ```
 [095843] goTenna> version
@@ -50,7 +58,7 @@ Show the goTenna firmware version.  This version appears out-of-sync from what's
 
 ### RSSI Command
 
-Get the [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) of the five [MURS](https://en.wikipedia.org/wiki/Multi-Use_Radio_Service) channels used to communicate over.
+Get the [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) of the five [MURS](https://en.wikipedia.org/wiki/Multi-Use_Radio_Service) channels used for communication.
 
 ```
 [165182] goTenna> rssi
@@ -148,7 +156,7 @@ Read the internal temperature.  Could be the temperature of the Freescale ARM pr
 
 ### Res Command
 
-Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf) is a High-Performance, Low-Current Tranceiver by Silicon Labs.
+Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf), mentioned in the resulting output, is a High-Performance Low-Current Tranceiver by Silicon Labs.
 
 Interesting to note, this command is sesensitive to trailing extraneous characters.
 
@@ -326,7 +334,7 @@ Set the VAPC?  Don't set this.  Leave it at 3400?
 
 ### Read_eflash command
 
-Output the contents of the internal flash chip over the serial port.  I've created some tools to aid with extracting the flash this way: [https://github.com/dogshoes/gotenna-flash-dumper].
+Output the contents of the internal flash chip over the serial port.  I've created some tools to aid with extracting the flash this way: https://github.com/dogshoes/gotenna-flash-dumper.
 
 ```
 [1359491] goTenna> read_eflash
@@ -366,7 +374,7 @@ Write Diag Block, 434 CRC: 0
 [056971-000] Device Data Reset successful
 ```
 
-Additionally, for extra excitement, there's a red LED which illuminates the button under certain circumstances.  Related to charging status?
+Additionally, for extra excitement, there's a red LED which illuminates while the device is charging.
 
 ### Additional Notes and Things to Look at
 
@@ -629,6 +637,8 @@ Device Status:     0x0000
 ```
 
 ### Output From `dmesg`
+
+The serial number here has not been obfuscated.  Every goTenna I've tried reports this serial number.
 
 ```
 [125726.694882] usb 2-2.1: new full-speed USB device number 6 using uhci_hcd
