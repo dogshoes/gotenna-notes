@@ -37,13 +37,13 @@ As of the latest firmware release, 0.23.2, the `goTenna>` prompt is no longer di
 
 ### Version Command
 
-Show the goTenna firmware version.  This version appears different from what the goTenna app reports.
+Show the goTenna firmware version.  The version reported by the CLI is hexidecimally encoded (0x00, 0x12, 0x02), while the verion reported in the application converts it to a number (0, 21, 4).
 
-| Version displayed in CLI | Version displayed in app |
-|--------------------------|--------------------------|
-| 00.12.02                 | 00.18.02                 |
-| 00.15.04                 | 00.21.04                 |
-| 00.17.02                 | 0.23.2                   |
+| Observed version |
+|------------------|
+| 00.12.02         |
+| 00.15.04         |
+| 00.17.02         |
 
 ```
 [095843] goTenna> version
