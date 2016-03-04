@@ -11,20 +11,42 @@ Connect the goTenna over USB to any desktop computer and it shows up as a "goTen
 Periodically send a message over the serial port or else you'll get this message and the serial port will drop!
 
 ```
-[1085000-18984] USB Asleep
+[543600-20940]  USB   USB Asleep
 ```
-
-Send a CR to get a `goTenna>` prompt.  You don't need to be at a `goTenna>` prompt to enter a command.
 
 ### The Periodic Event
 
 Every minute (?) goTenna outputs diagnostic information about the current state.
 
 ```
-[984000-40984] Periodic Event
-[984000-000] Batt Voltage : 3981, selected pap: 6
-[984015-015] scan rssi[0=81  1=76  2=0  3=91  4=75]
-[984016-001] MAC bg_rssi=73
+[522600-40141]  TRX   Periodic Event
+[522600-000]  TRX   Batt Voltage : 4141, selected pap: 5
+[522603-003]  TRX   RSSI: ch=0, rssi=78
+[522606-003]  TRX   RSSI: ch=1, rssi=84
+[522609-003]  TRX   RSSI: ch=2, rssi=81
+[522612-003]  TRX   RSSI: ch=3, rssi=74
+[522615-003]  TRX   Min rssi 74
+[522615-000]  TRX   Bg index val : 3 bin 0 rssi=75  bin 1 rssi=68  bin 2 rssi=74  bin 3 rssi=83  bin 4 rssi=82  bin 5 rssi=78  bin 6 rssi=67  bin 7 rssi=76
+[522616-001]  TRX   MAC bg_rssi=75
+[522616-000]  TRX   MAC Current State: MAC_PERIODIC_AWAKE_IDLE*
+[522617-001]  TRX   TRX channel id : 4
+[522619-002]  TRX   TRX Current State: PDU_IDLE_LONG *
+[522619-000]  TRX   PA --- OFF
+[522640-021]  TRX   MAC Expired State: MAC_PERIODIC_AWAKE_IDLE*
+[522640-000]  TRX   Batt Voltage : 4140, selected pap: 5
+[522643-003]  TRX   RSSI: ch=0, rssi=74
+[522646-003]  TRX   RSSI: ch=1, rssi=76
+[522649-003]  TRX   RSSI: ch=2, rssi=78
+[522652-003]  TRX   RSSI: ch=3, rssi=65
+[522655-003]  TRX   Min rssi 69
+[522655-000]  TRX   Bg index val : 4 bin 0 rssi=75  bin 1 rssi=68  bin 2 rssi=74  bin 3 rssi=69  bin 4 rssi=82  bin 5 rssi=78  bin 6 rssi=67  bin 7 rssi=76
+[522656-001]  TRX   MAC bg_rssi=73
+[522656-000]  TRX   HDNA Mode 0, advertised 0, observed 0
+[522657-001]  TRX   Sleep TRX Chip for LDC mode
+[522657-000]  TRX   MAC Current State: Idle*
+[522658-001]  TRX   TRX channel id : 4
+[522660-002]  TRX   TRX Current State: PDU_IDLE_LONG *
+[522660-000]  TRX   PA --- OFF
 ```
 
 Battery voltage is what it says on the tin.  PAP appears to be "PA Power", refer to the `pap` command documented below.  [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) is a pretty familiar RF concept.
@@ -35,47 +57,63 @@ The CLI seems to accept some valid commands with any extraneous trailing charact
 
 As of the latest firmware release, 0.23.2, the `goTenna>` prompt is no longer displayed.
 
-### Version Command
+### CLI Commands
 
-Show the goTenna firmware version.  The version reported by the CLI is hexidecimally encoded (0x00, 0x12, 0x02), while the verion reported in the application converts it to a number (0, 21, 4).
+### version
 
-| Observed version |
-|------------------|
-| 00.12.02         |
-| 00.15.04         |
-| 00.17.02         |
+Show the goTenna firmware version.  The version reported by the CLI is hexidecimally encoded (0x00, 0x12, 0x02), while the verion reported in the application is convered to its numerical equivalent (0, 21, 4).
+
+| Observed version | Notes |
+|------------------|-------| 
+| 00.12.02         | First generation firmware. |
+| 00.15.04         | Included in 1.12 of the goTenna app. |
+| 00.17.02         | Included in 1.23 of the goTenna app. |
 
 ```
-[095843] goTenna> version
-[121435] goTenna> 
-[121445-39429] cli_parse_command >> version
-[121445-000] FW Version : 00.12.02
-[121445-000] Build Date : Oct 22 2015 13:05:48
-
-[121445-000] Boot Version: 01.07
-[121445-000] printer: cli-cmd = version
+version
 ```
 
-### RSSI Command
+```
+[224521-23461]  PRNT  FW Version : 00.17.02
+[224521-000]  PRNT  Build Date : Feb 18 2016 13:40:31
+
+[224522-001]  PRNT  Boot Version: 01.07
+[224522-000]  PRNT  Boot flag: aa. Firmware CRC: d06f2af1
+```
+
+#### rssi
 
 Get the [RSSI](https://en.wikipedia.org/wiki/Received_signal_strength_indication) of the five [MURS](https://en.wikipedia.org/wiki/Multi-Use_Radio_Service) channels used for communication.
 
+Firmware versions prior to 00.23.2 reported only the first five channels.
+
 ```
-[165182] goTenna> rssi
-[166444] goTenna>
-[166454-2438] cli_parse_command >> rssi
-[166454-000] CLI cmd=RSSI
-[166454-000] printer: cli-cmd = rssi
-[166475-021] log received.
-[166490-015] RSSI :
-Channel 0 RSSI 85
-Channel 1 RSSI 70
-Channel 2 RSSI 83
-Channel 3 RSSI 80
-Channel 4 RSSI 82
+rssi
 ```
 
-### PAP Command
+```
+[123303-2645]  PRNT  CLI cmd=RSSI
+[123314-011]  PRNT  log received.
+[123327-013]  TRX   RSSI:
+Channel 0 RSSI 79
+Channel 1 RSSI 77
+Channel 2 RSSI 89
+Channel 3 RSSI 77
+Channel 4 RSSI 77
+Channel 5 RSSI 1937006955
+Channel 6 RSSI 1937006955
+Channel 7 RSSI 1937006955
+Channel 8 RSSI 1937006955
+Channel 9 RSSI 1937006955
+Channel 10 RSSI 1937006955
+Channel 11 RSSI 1937006955
+Channel 12 RSSI 1937006955
+Channel 13 RSSI 1937006955
+Channel 14 RSSI 1937006955
+Channel 15 RSSI 1937006955
+```
+
+#### pap [val]
 
 Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to change it.  However, changing it doesn't seem to change the "selected pap" value that appears in the periodic event.   The largest PAP that can be entered is 255.  Larger values will be truncated to 255.
 
@@ -87,40 +125,39 @@ Set the PA Power (PAP).  Not sure what this is, or whether it's a great idea to 
 [366786-000] printer: cli-cmd = pap 2
 ```
 
-### Batt Command
+#### batt
 
 Get information about the battery.  Issuing the command as `battery` works just as well, but this could be due to the cli ignoring extraneous trailing characters.  The values this command gives are sometimes wonky, so several readings should be taken any outliers should be discarded.
 
 ```
-[541125] goTenna> batt
-[544393] goTenna>
-[544404-4274] cli_parse_command >> batt
-[544405-001] Raw Value :40627 Battery= 4.091
-[544405-000] printer: cli-cmd = batt
+batt
 ```
 
-### Flash Command
+```
+[073972-33712]  PRNT  Raw Value :41269 Battery= 4.156
+```
+
+#### flash
 
 Perform a flash check?  I'm a bit afraid of this command.
 
 ```
-[650554] goTenna> flash
-[651526] goTenna> 
-[651536-21415] cli_parse_command >> flash
-[651536-000] Flash check passed.
-[651536-000] printer: cli-cmd = flash
+flash
 ```
 
-### Power Command
+```
+[091966-11507]  PRNT  Flash check passed.
+```
+
+#### power
 
 Seems to immediately reboot the device.  Does not return any output.  Your serial connection will drop as the USB device disconnects and reconnects.
 
 ```
-[946820] goTenna> power
-[948519] goTenna>
+power
 ```
 
-### Log Command
+#### log
 
 Not at all sure what this does.
 
@@ -132,72 +169,74 @@ Not at all sure what this does.
 [806237-010] log received.
 ```
 
-### Temp Command
+#### temp
 
 Read the internal temperature.  Could be the temperature of the Freescale ARM processor or the Silicon Labs RF chip, not entirely sure yet.  Given the preoccupation with the TRX (tranceiver?) temperature during `send` I would imagine this is temperature of the Silicon Labs RF chip.
 
 ```
-[014864] goTenna> temp
-[022266] goTenna>
-[022276-21064] cli_parse_command >> temp
-[022296-020] Temp raw: e
-[022296-000] Temp: 14
-[022296-000] printer: cli-cmd = temp
+temp
 ```
 
 ```
-[193855] goTenna> temp
-[194621] goTenna>
-[194631-30615] cli_parse_command >> temp
-[194651-020] Temp raw: 11
-[194651-000] Temp: 17
-[194651-000] printer: cli-cmd = temp
+[014708-13898]  PRNT  Temp raw: e
+[014708-000]  PRNT  Temp: 14
 ```
 
-### Res Command
+#### res
 
 Reset RF hardware?  The [Si4460](https://www.silabs.com/Support%20Documents/TechnicalDocs/Si4464-63-61-60.pdf), mentioned in the resulting output, is a High-Performance Low-Current Tranceiver by Silicon Labs.
 
 Interesting to note, this command is sesensitive to trailing extraneous characters.
 
 ```
-[072043] goTenna> res
-[072690] goTenna>
-[072701-1150] cli_parse_command >> res
-[072701-000] printer: cli-cmd = res
-[072711-010] TRX Current State: STATE_POWER_UP *
-[073277-566] Si4460 initialized.
-[073284-007] Batt Voltage : 4163, selected pap: 6
-[073284-000] Batt Voltage : 4165, selected pap: 6
-[073300-016] scan rssi[0=88  1=78  2=87  3=93  4=71]
-[073300-000] MAC bg_rssi=42
-[073300-000] MAC : STATE_POWER_UP*
-[073300-000] Reset Cause : 0, 4
-[073301-001] MAC Current State: Idle*
-[073301-000] Batt Voltage : 4164, selected pap: 6
-[073316-015] scan rssi[0=87  1=89  2=86  3=80  4=87]
-[073317-001] MAC bg_rssi=44
-[073317-000] TRX Current State: STATE_POWER_UP *
-[073883-566] Si4460 initialized.
-[073890-007] Batt Voltage : 4165, selected pap: 6
+res
 ```
 
-### ? (Help) Command
+```
+[035634-20926]  TRX   Si4460 initialized.
+[035642-008]  TRX   Batt Voltage : 4148, selected pap: 5
+[035643-001]  TRX   Batt Voltage : 4154, selected pap: 5
+[035646-003]  TRX   RSSI: ch=0, rssi=96
+[035649-003]  TRX   RSSI: ch=1, rssi=97
+[035652-003]  TRX   RSSI: ch=2, rssi=76
+[035655-003]  TRX   RSSI: ch=3, rssi=87
+[035658-003]  TRX   Min rssi 81
+[035658-000]  TRX   Bg index val : 3 bin 0 rssi=40  bin 1 rssi=40  bin 2 rssi
+[035659-001]  TRX   MAC bg_rssi=45
+[035659-000]  TRX   MAC : STATE_POWER_UP*
+[035659-000]  TRX   Reset Cause : 0, 4
+[035660-001]  TRX   Batt Voltage : 4155, selected pap: 5
+[035663-003]  TRX   RSSI: ch=0, rssi=86
+[035666-003]  TRX   RSSI: ch=1, rssi=80
+[035669-003]  TRX   RSSI: ch=2, rssi=88
+[035672-003]  TRX   RSSI: ch=3, rssi=92
+[035675-003]  TRX   Min rssi 83
+[035675-000]  TRX   Bg index val : 4 bin 0 rssi=40  bin 1 rssi=40  bin 2 rssi
+[035676-001]  TRX   MAC bg_rssi=50
+[035676-000]  TRX   HDNA Mode 0, advertised 0, observed 0
+[035676-000]  TRX   Sleep TRX Chip for LDC mode
+[035677-001]  TRX   MAC Current State: Idle*
+[035678-001]  TRX   TRX channel id : 4
+[035679-001]  TRX   TRX Current State: PDU_IDLE_LONG *
+[035680-001]  TRX   PA --- OFF
+```
+
+#### ? (help)
 
 Issuing a `?` to the CLI returns some help.
 
 ```
-[511539] goTenna> ?
-[512308] goTenna>
-[512319-20303] cli_parse_command >> ?
-[512319-000] res->       Reset network SM IDLE.
-[512319-000] ctx {0/1}->         Continuous transmit(en=1).
-[512319-000] cfp {0/1}->         Corrupt First Packet(en=1).
-[512319-000] cap {0/1}->         Corrupt All Packets(en=1).
-[512320-001] printer: cli-cmd = ?
+?
 ```
 
-### Ctx Command
+```
+[057424-17165]  PRNT  res->     Reset network SM IDLE.
+[057424-000]  PRNT  ctx {0/1}->  Continuous transmit(en=1).
+[057425-001]  PRNT  cfp {0/1}->  Corrupt First Packet(en=1).
+[057425-000]  PRNT  cap {0/1}->  Corrupt All Packets(en=1).
+```
+
+#### ctx [0|1]
 
 Enable continuous transmission mode.
 
@@ -223,7 +262,7 @@ Disable continuous transmission mode.
 [027727-007] Continuous Transmission Disabled.
 ```
 
-### Cfp Command
+#### cfp [0|1]
 
 Enable first packet corruption.  Used for testing?
 
@@ -245,7 +284,7 @@ Disable first packet corruption.
 [060690-011] First Packet Corruption Disabled.
 ```
 
-### Cap Command
+#### cap [0|1]
 
 Enable all packet corruption.
 
@@ -267,7 +306,7 @@ Disable all packet corruption.
 [135767-011] All Packet Corruption Disabled.
 ```
 
-### Chn Command
+#### chn [num]
 
 Select a channel.  The maximum channel that can be selected is 2147483647 (32 bits).  However, during `send` it appears as though the channel is handled as only 8 bits and wraps around, implying maximum of 256 channels.
 
@@ -279,7 +318,7 @@ Select a channel.  The maximum channel that can be selected is 2147483647 (32 bi
 [189358-011] Channel 1 selected.
 ```
 
-### Send Command 
+#### send
 
 Send... something?  Uses previously set values from `vapc`, `chn`, `pap` commands.  Unsure how to set the payload, destination, or anything else about what's being sent.
 
@@ -320,9 +359,9 @@ Send... something?  Uses previously set values from `vapc`, `chn`, `pap` command
 [345965-007] Batt Voltage : 4132, selected pap: 6
 ```
 
-### Vapc Command
+#### vapc [val]
 
-Set the VAPC?  Don't set this.  Leave it at 3400?
+Set the VAPC?  Probably best to leave this be.  Leave it at 3400?
 
 ```
 [484758] goTenna> vapc 3400
@@ -332,13 +371,15 @@ Set the VAPC?  Don't set this.  Leave it at 3400?
 [486980-000] printer: cli-cmd = vapc 3400
 ```
 
-### Read_eflash command
+#### read_eflash
 
 Output the contents of the internal flash chip over the serial port.  I've created some tools to aid with extracting the flash this way: https://github.com/dogshoes/gotenna-flash-dumper.
 
 ```
-[1359491] goTenna> read_eflash
-[1361976] goTenna> 
+read_eflash
+```
+
+```
 000000: 3A1008000000600020C10800004D2A01 
 000010: 00512A0100AB0A3A10081000552A0100 
 000020: 592A01005D2A0100612A0100C00A3A10 
@@ -346,14 +387,222 @@ Output the contents of the internal flash chip over the serial port.  I've creat
 ...
 ```
 
+#### disp-gid
+
+Display the registered GID(s).
+
+```
+disp-gid
+```
+
+```
+RAM: Number of GID = 1
+[ k] T    APPID  GID              M    HASH
+---- --- ------ ---------------- ---- -----
+[ 0] 00 : 3fff : 53xx xxd4 ecxx : 00 : f1xx
+```
+
+#### getgid
+
+Displays detailed information about the registered GIDs.
+
+```
+getgid
+```
+
+```
+[437860-4707]  FLSH  ERROR: MSG buf pointer invalid
+[437861-001]  FLSH  Public Key len : 49 Public key : c56010439fdf9f727d3e6083e71f6a40d1381c02c74aa4b4f95d2682f5785349a1423f691ae59a492bad9ddefb4531bfbd
+[437869-008]  FLSH  Private GIDlen :12: packet: 00 3f ff 53 xx xx d4 ec xx 00 73 f1
+
+[437872-003]  FLSH   GID Count: 1
+[437873-001]  FLSH  Stored GIDlen :12: packet: 00 3f ff 53 xx xx d4 ec xx 00 73 f1
+```
+
+#### dev_info
+
+Return some useful information about the device.
+
+```
+dev_info
+```
+
+```
+[020470-19661]  PRNT  PAP Offset 0
+[020470-000]  PRNT  SERIAL no: MX154XXXXX
+[020470-000]  PRNT  Bluetooth flag 255
+[020470-000]  PRNT  Device Type :01, Hardware Version 01
+```
+
+#### sweep [0|1]
+
+Perform some sort of RF test sweep?  Is any RF emitted during this?
+
+```
+sweep 1
+```
+
+```
+[220372-001]  TRX   Current Frequency 142179750
+[220392-020]  TRX   Frequency band 142 to 175 selected
+[220392-000]  TRX   Frequency band 142 - 175 configured
+[220394-002]  TRX   Frac   1078634656 -2147483648
+[220395-001]  TRX   PA --- ON. Vapc value:  0
+[220396-001]  TRX   Current Frequency 142180000
+[220416-020]  TRX   Frequency band 142 to 175 selected
+[220416-000]  TRX   Frequency band 142 - 175 configured
+[220418-002]  TRX   Frac   1078634659 -2147483648
+[220419-001]  TRX   PA --- ON. Vapc value:  0
+[220420-001]  TRX   Current Frequency 142180250
+[220440-020]  TRX   Frequency band 142 to 175 selected
+[220440-000]  TRX   Frequency band 142 - 175 configured
+[220442-002]  TRX   Frac   1078634663 -1610612736
+[220443-001]  TRX   PA --- ON. Vapc value:  0
+[220444-001]  TRX   Current Frequency 142180500
+[220464-020]  TRX   Frequency band 142 to 175 selected
+[220464-000]  TRX   Frequency band 142 - 175 configured
+[220466-002]  TRX   Frac   1078634666 -1610612736
+[220467-001]  TRX   PA --- ON. Vapc value:  0
+[220468-001]  TRX   Current Frequency 142180750
+[220488-020]  TRX   Frequency band 142 to 175 selected
+[220488-000]  TRX   Frequency band 142 - 175 configured
+[220490-002]  TRX   Frac   1078634669 -1073741824
+[220491-001]  TRX   PA --- ON. Vapc value:  0
+[220492-001]  TRX   Current Frequency 142181000
+[220512-020]  TRX   Frequency band 142 to 175 selected
+[220512-000]  TRX   Frequency band 142 - 175 configured
+[220514-002]  TRX   Frac   1078634672 -1610612736
+[220515-001]  TRX   PA --- ON. Vapc value:  0
+[220516-001]  TRX   Current Frequency 142181250
+[220536-020]  TRX   Frequency band 142 to 175 selected
+[220536-000]  TRX   Frequency band 142 - 175 configured
+[220538-002]  TRX   Frac   1078634675 -1073741824
+[220539-001]  TRX   PA --- ON. Vapc value:  0
+[220540-001]  TRX   Current Frequency 142181500
+```
+
+```
+sweep 0
+```
+
+```
+[220541-001]  PRNT  Sweep Disabled.
+```
+
+#### get_serial
+
+Returns the serial number.
+
+```
+get_serial
+```
+
+```
+[011816-4014]  PRNT  SERIAL no:MX154XXXXX
+[011816-000]  PRNT
+```
+
+#### getdiag
+
+Get diagnostic information.
+
+```
+getdiag
+```
+
+```
+RST CAUSE:8200
+PWR RST: 65
+SOFT RST: 156
+WDOG RST: 1
+
+Total Mins of Operation: 214280
+Total BT Connections Mins: 37010
+Total Transmissions: 14
+
+Max Recorded Temperature: 33
+
+Total Private TX: 0
+Total Group TX: 0
+Total Shout TX: 23
+Failed Private TX: 0
+
+Total Private RX: 0
+Total Group RX: 0
+Total Shout RX: 164
+
+Total MSG Dropped RSSI: 3
+Total MSG Dropped Thermal Backoff 0
+
+RSSI Stats:
+RSSI 000 - 020 Pass:00000001 Fail:00000020 CRC Recov:00000001
+RSSI 020 - 040 Pass:00000001 Fail:00000007 CRC Recov:00000000
+RSSI 040 - 060 Pass:00000019 Fail:00000054 CRC Recov:00000000
+RSSI 060 - 080 Pass:00000077 Fail:00000021 CRC Recov:00000000
+RSSI 080 - 100 Pass:00000225 Fail:00000020 CRC Recov:00000000
+RSSI 100 - 120 Pass:00000154 Fail:00000005 CRC Recov:00000000
+RSSI 120 - 140 Pass:00000008 Fail:00000001 CRC Recov:00000000
+RSSI 140 - 160 Pass:00000002 Fail:00000000 CRC Recov:00000000
+RSSI 160 - 180 Pass:00000006 Fail:00000000 CRC Recov:00000000
+RSSI 180 - 200 Pass:00000000 Fail:00000000 CRC Recov:00000000
+RSSI 200 - 220 Pass:00000000 Fail:00000000 CRC Recov:00000000
+RSSI 220 - 240 Pass:00000000 Fail:00000001 CRC Recov:00000000
+RSSI 240 - 260 Pass:00000000 Fail:00000000 CRC Recov:00000000
+```
+
+#### clrdiag
+
+Clear the diagnostic blocks from flash.  All mertrics reported by `getdiag` are reset.
+
+```
+clrdiag
+```
+
+```
+[214941-13881]  FLSH  ERROR: MSG buf pointer out of range
+[215076-135]  FLSH  Block: 433, Invalid CRC, Expected:29739, IS:-1
+[215083-007]  FLSH  Block: 434, Invalid CRC, Expected:29739, IS:-1
+[215084-001]  FLSH  Diag Block corruption. Erasing Diag Block.[215159-075]  FLSH  Write Diag Block, 433 CRC: 0
+[215225-066]  FLSH  Write Diag Block, 434 CRC: 0
+[215232-007]  FLSH  Block: 433, Invalid CRC, Expected:10804, IS:0
+```
+
 ### The Button
 
 There's a tiny button near the USB port on the goTenna.  A single press results in the following message.
 
 ```
-[038760] BUTTON RELEASED
-[039378] BUTTON PRESSED
+[108550-000]  INT   BUTTON PRESSED
+[108833-000]  INT   BUTTON RELEASED
 ```
+
+It's smart enough to see a double press as well.
+
+```
+[105684-000]  INT   BUTTON PRESSED
+[105788-000]  INT   BUTTON RELEASED
+[105925-000]  INT   BUTTON PRESSED
+[106000-000]  INT   BUTTON DOUBLE PRESSED
+[106011-000]  INT   BUTTON RELEASED
+```
+
+And, things go a little crazy when you triple press it...
+
+```
+[106289-000]  INT   BUTTON PRESSED
+[106389-000]  INT   BUTTON RELEASED
+[108317-000]  INT   BUTTON PRESSED
+[108400-000]  INT   BUTTON TRIPLE PRESSED
+[108422-000]  INT   BUTTON RELEASED
+[108550-000]  INT   BUTTON PRESSED
+[108833-000]  INT   BUTTON RELEASED
+[109000-000]  INT   BUTTON TRIPLE RELEASED. Send Emergency
+[109001-28543]  FLSH  Sending Out Emergency Beacon
+[109002-001]  FLSH  Buffer Allocated 1FFFE5B8. Num Free: 6
+...
+```
+
+Oops.
 
 Holding the button down for over 10 seconds does this!  Does this reset the data stored in flash?
 
